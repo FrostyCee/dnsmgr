@@ -1,0 +1,132 @@
+#!/bin/bash
+# DNSMGR  0.1.1
+# A simple user fiendly script to manage DNS settings
+# Written by Mark Capehart Jr.
+#
+# ***TODO: Add gui through yad or other dialog system...
+
+if [ -f /etc/resolv.og ]; then
+
+PS3='Please enter your choice: '
+options=("Show Current DNS" 
+				"Previous DNS" 
+				"My Original DNS" 
+				"Google's DNS" 
+				"Cloudflare DNS" 
+				"Comodo Secure DNS – Best for Gaming" 
+				"AdGuard DNS - Block Ads, Tracking and Phishing" 
+				"Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Show Current DNS")
+			clear
+            cat /etc/resolv.conf
+            read -p "Press key to continue.. " -n1 -s
+            clear
+            ;;
+        "Previous DNS")
+				if [ -f /etc/resolv.orig ]; then
+					rm /etc/resolv.conf 
+					cp /etc/resolv.orig /etc/resolv.conf
+					clear
+					read -p "Your previous DNS settings have been restored!" -n1 -s
+					clear
+				else
+					clear
+					echo "Stop trying to break your internet dummy!"
+					read -p "Your previous DNS settings do not exist! Because you haven't changed them." -n1 -s
+					clear
+				fi
+            ;;
+        "My Original DNS")
+				if [ -f /etc/resolv.og ]
+				then
+					rm /etc/resolv.conf;
+					cp /etc/resolv.og /etc/resolv.conf;
+					clear;
+					read -p "Your original DNS settings have been restored!" -n1 -s;
+					clear;
+				else
+					clear;
+					echo "Sorry, your original DNS settings are gone or were never created...";
+					read -p "Your original DNS settings are inaccessible or do not exist! Are you root?" -n1 -s;
+					clear;
+				fi
+            ;;
+        "Google's DNS")
+            echo "Google Nameservers Activate!";
+            cp /etc/resolv.conf /etc/resolv.orig;
+            rm /etc/resolv.conf;
+            echo "nameserver 8.8.8.8" > /etc/resolv.conf;
+            echo "nameserver 8.8.4.4" >> /etc/resolv.conf;
+            clear;
+            read -p "You should be using Google DNS now... Don't be Evil!" -n1 -s;
+            clear;
+            ;;
+        "Cloudflare DNS")
+            echo "Cloudflare DNS GO!";
+            cp /etc/resolv.conf /etc/resolv.orig;
+            rm /etc/resolv.conf;
+            echo "nameserver 1.1.1.1" > /etc/resolv.conf;
+            echo "nameserver 1.0.0.1" >> /etc/resolv.conf;
+            clear;
+            read -p "You should be using Cloudflare DNS now... Security, Speed & Reliability." -n1 -s;
+            clear;
+            ;;
+        "Comodo Secure DNS – Best for Gaming")
+            echo "Less QQ, Moar Pew Pew";
+            cp /etc/resolv.conf /etc/resolv.orig;
+            rm /etc/resolv.conf;
+            echo "nameserver 8.26.56.26" > /etc/resolv.conf;
+            echo "nameserver 8.20.247.20" >> /etc/resolv.conf;
+            clear;
+            read -p "You should be using Comodo Secure DNS now... Game On!" -n1 -s;
+            clear;
+            ;;
+        "AdGuard DNS - Block Ads, Tracking and Phishing")
+            echo "Bye bye Advertisements!";
+            cp /etc/resolv.conf /etc/resolv.orig;
+            rm /etc/resolv.conf;
+            echo "nameserver 176.103.130.130" > /etc/resolv.conf;
+            echo "nameserver 176.103.130.131" >> /etc/resolv.conf;
+            clear;
+            read -p "You should be using AdGuard DNS now... Stay safe!" -n1 -s;
+            clear;
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo invalid option;;
+    esac
+done
+
+else
+echo "This appears to be your first time running dnsmgr!";
+read -p "We will now backup your DNS settings, press any key..." -n1 -s;
+
+				if [ -f /etc/resolv.conf ]
+				then
+					cp /etc/resolv.conf /etc/resolv.og;
+					clear;
+					echo "Your DNS settings have now been stored!";
+					read -p "Press any key..." -n1 -s;
+					clear;
+					./dnsmgr;
+				else
+					clear;
+					echo "Hmm... Your DNS configuration is missing!";
+					echo "We're gonna make a blank DNS file so you can reset it.";
+					read -p "Press any key..." -n1 -s;
+					touch /etc/resolv.conf;
+					cp /etc/resolv.conf /etc/resolv.og;
+					clear;
+					echo "Ok, you now have a blank DNS file located at '/etc/resolv.conf'";
+					echo "NOTE: This blank configuration is now option #3 on next screen.";
+					echo "If unsure, choose option #4.";
+					read -p "Press any key..." -n1 -s;
+					clear;
+					./dnsmgr;
+				fi
+clear;
+fi
